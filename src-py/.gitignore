@@ -23,6 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-build/*
-gui/*
-*.pyc
+build
+gui
+__pycache__
