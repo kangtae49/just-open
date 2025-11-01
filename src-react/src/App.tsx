@@ -1,11 +1,11 @@
 import './App.css'
-import AboutView from "./app/about/AboutView.tsx";
+import VideoView from "./app/video/ui/VideoView";
 
 function App() {
 
   return (
     <>
-      <AboutView />
+      <VideoView />
     </>
   )
 }
