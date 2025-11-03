@@ -1,11 +1,11 @@
 import './App.css'
-import VideoView from "./app/video/ui/VideoView";
+import JustLayoutView from "@/app/just-layout/ui/JustLayoutView.tsx";
 
 function App() {
 
   return (
     <>
-      <VideoView />
+      <JustLayoutView />
     </>
   )
 }
