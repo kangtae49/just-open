@@ -13,4 +13,5 @@ dependencies = [
     "pysubs2",
     "charset_normalizer",
     "portalocker",
+    "flask",
 ]

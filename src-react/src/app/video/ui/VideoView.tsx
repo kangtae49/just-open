@@ -149,14 +149,17 @@ function VideoView() {
 
   return (
     <>
-      <video 
-        ref={videoRef} 
-        autoPlay={videoState.autoPlay}
-        controls={videoState.controls}
-      >
-        <source />
-      </video>
+      <div>
+        <video 
+          ref={videoRef} 
+          autoPlay={videoState.autoPlay}
+          controls={videoState.controls}
+        >
+          <source />
+        </video>
+      </div>
       <pre>{JSON.stringify(videoState, null, 2)}</pre>
+      <input type="file" />
     </>
   )
 }

@@ -19,7 +19,12 @@ export default defineConfig({
     {
       name: 'local-file-middleware',
       configureServer(server) {
-        server.middlewares.use('/local/file', (req: IncomingMessage, res: ServerResponse) => {
+        server.middlewares.use('/http_get', (req: IncomingMessage, res: ServerResponse) => {
+          if (req.method !== 'GET') {
+            res.statusCode = 405;
+            res.end('Method Not Allowed');
+            return;
+          }
           const parsed = url.parse(req.url!, true);
           const filePath = parsed.query.path as string;
 
@@ -61,6 +66,34 @@ export default defineConfig({
             stream.pipe(res);
           }
         });
+
+        server.middlewares.use('/local/file/write', (req: IncomingMessage, res: ServerResponse) => {
+          if (req.method !== 'POST') {
+            res.statusCode = 405;
+            res.end('Method Not Allowed');
+            return;
+          }
+          const parsed = url.parse(req.url!, true);
+          const filePath = parsed.query.path as string;
+
+          const dir = path.dirname(filePath);
+          fs.mkdirSync(dir, { recursive: true });
+
+          let body = '';
+          req.on('data', chunk => (body += chunk));
+          req.on('end', () => {
+            try {
+              fs.writeFileSync(filePath, body, 'utf8');
+              res.statusCode = 200;
+              res.end('File saved successfully');
+            } catch (e: any) {
+              res.statusCode = 500;
+              res.end('Failed to save file: ' + e.message);
+            }
+          });
+
+        });
+
       },
     },
   ],
