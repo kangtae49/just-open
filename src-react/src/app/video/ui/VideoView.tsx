@@ -1,16 +1,29 @@
 import "./VideoView.css"
-import { useAppSelector, useAppDispatch } from "@/app/hooks";
+import {useAppDispatch, useAppSelector} from "@/app/hooks";
 import { useEffect, useRef } from "react";
-import { videoActions } from "../videoSlice";
+import {createVideoSlice, type VideoState} from "../videoSlice";
 import { srcLocal } from "@/hooks/utils";
 import useOnload from "@/hooks/useOnload";
+import {store} from "@/app/store"
 
 function VideoView() {
+  const videoId = "video"
   const videoRef = useRef<HTMLVideoElement>(null);
+
   const dispatch = useAppDispatch();
-  const videoState = useAppSelector((s) => s.video)
+  const videoSlice = createVideoSlice(videoId);
+  const videoActions = videoSlice.actions;
+  const videoState = useAppSelector<VideoState>(videoId);
 
   const {onLoad} = useOnload();
+
+  useEffect(() => {
+    store.injectReducer(videoSlice.name, videoSlice.reducer);
+    return () => {
+      store.removeReducer(videoSlice.name);
+    }
+  }, [])
+
 
   onLoad(() => {
     console.log("onload")
@@ -141,19 +154,19 @@ function VideoView() {
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    if (videoState.mediaPath) {
+    if (videoState?.mediaPath) {
       video.src = srcLocal(videoState.mediaPath);
       video.load();
     }
-  }, [videoState.mediaPath])
-
+  }, [videoState?.mediaPath])
+  console.log('videoState', videoState)
   return (
     <>
       <div>
         <video 
           ref={videoRef} 
-          autoPlay={videoState.autoPlay}
-          controls={videoState.controls}
+          autoPlay={videoState?.autoPlay}
+          controls={videoState?.controls}
         >
           <source />
         </video>

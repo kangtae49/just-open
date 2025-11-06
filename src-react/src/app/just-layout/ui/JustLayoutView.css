@@ -2,3 +2,25 @@
     width: 100%;
     height: 100%;
 }
+
+.just-win {
+    display: flex;
+    flex-direction: column;
+}
+
+.just-win .just-win-title {
+    cursor: move;
+    box-sizing: border-box;
+}
+
+.just-win .just-win-body {
+    flex: 1;
+}
+
+.dragging {
+    cursor: move;
+    border: 1px dashed gray;
+    box-sizing: border-box;
+    /*padding: 0.5rem;*/
+    /*margin: '0.5rem',*/
+}
