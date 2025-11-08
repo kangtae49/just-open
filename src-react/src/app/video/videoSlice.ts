@@ -37,5 +37,5 @@ export const createVideoSlice  = (id: string) =>
       setMuted: (state, { payload }) => { state.muted = payload },
       setIsPlaying: (state, { payload }) => { state.isPlaying = payload },
     }
-  })
+  });
 

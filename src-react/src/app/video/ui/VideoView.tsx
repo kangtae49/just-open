@@ -1,34 +1,30 @@
 import "./VideoView.css"
-import {useAppDispatch, useAppSelector} from "@/app/hooks";
 import { useEffect, useRef } from "react";
+import {useDynamicSlice} from "@/store/hooks";
 import {createVideoSlice, type VideoState} from "../videoSlice";
 import { srcLocal } from "@/hooks/utils";
 import useOnload from "@/hooks/useOnload";
-import {store} from "@/app/store"
 
 function VideoView() {
   const videoId = "video"
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const dispatch = useAppDispatch();
-  const videoSlice = createVideoSlice(videoId);
-  const videoActions = videoSlice.actions;
-  const videoState = useAppSelector<VideoState>(videoId);
+  const {
+    state: videoState,
+    actions: videoActions,
+    dispatch
+  } = useDynamicSlice<VideoState>(videoId, createVideoSlice)
 
   const {onLoad} = useOnload();
 
-  useEffect(() => {
-    store.injectReducer(videoSlice.name, videoSlice.reducer);
-    return () => {
-      store.removeReducer(videoSlice.name);
-    }
-  }, [])
-
-
   onLoad(() => {
+
+    if (videoActions === undefined) return;
     console.log("onload")
+
     dispatch(videoActions.setMediaPath("C:\\Users\\kkt\\Downloads\\english\\1초면 구분합니다! ｜ 원어민만 느끼는 뉘앙스 구분법 [bfsY18cvveo].mp4"))
   })
+
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -45,18 +41,21 @@ function VideoView() {
     const handleCanplayThrough = (e: Event) => {console.log("canplaythrough", e)}
     const handleEmptied = (e: Event) => {console.log("emptied", e)}
     const handlePlay = (e: Event) => {
+      if (videoActions === undefined) return;
       const video = videoRef.current;
       if (!video) return;
       console.log("play", e)
       dispatch(videoActions.setIsPlaying(true))
     }
     const handlePlaying = (e: Event) => {
+      if (videoActions === undefined) return;
       const video = videoRef.current;
       if (!video) return;
       console.log("playing", e)
       dispatch(videoActions.setIsPlaying(true))
     }
     const handlePause = (e: Event) => {
+      if (videoActions === undefined) return;
       const video = videoRef.current;
       if (!video) return;
       console.log("pause", e)
@@ -67,24 +66,28 @@ function VideoView() {
     const handleSeeked = (e: Event) => {console.log("seeked", e)}
     const handleEnded = (e: Event) => {console.log("ended", e)}
     const handleRateChange = (e: Event) => {
+      if (videoActions === undefined) return;
       const video = videoRef.current;
       if (!video) return;
       console.log("ratechange", e)
       dispatch(videoActions.setPlaybackRate(video.playbackRate))
     }
     const handleTimeUpdate = (e: Event) => {
+      if (videoActions === undefined) return;
       const video = videoRef.current;
       if (!video) return;
       console.log("timeupdate", e)
       dispatch(videoActions.setCurrentTime(video.currentTime))
     }
     const handleDurationChange = (e: Event) => {
+      if (videoActions === undefined) return;
       const video = videoRef.current;
       if (!video) return;
       console.log("durationchange", e)
       dispatch(videoActions.setDuration(video.duration))
     }
     const handleVolumeChange = (e: Event) => {
+      if (videoActions === undefined) return;
       const video = videoRef.current;
       if (!video) return;
       console.log("volumechange", e)
@@ -149,7 +152,7 @@ function VideoView() {
       video.removeEventListener('removetrack', handleRemoveTrack);
     }
 
-  }, [dispatch])
+  }, [])
 
   useEffect(() => {
     const video = videoRef.current;
@@ -163,8 +166,8 @@ function VideoView() {
   return (
     <>
       <div>
-        <video 
-          ref={videoRef} 
+        <video
+          ref={videoRef}
           autoPlay={videoState?.autoPlay}
           controls={videoState?.controls}
         >
