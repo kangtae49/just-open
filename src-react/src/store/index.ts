@@ -1,6 +1,5 @@
 import { configureStore, combineReducers, type Reducer } from "@reduxjs/toolkit"
 import {devToolsEnhancer} from "@redux-devtools/remote";
-import {useEffect} from "react";
 
 const staticReducers = {} as Record<string, Reducer>
 const asyncReducers = {} as Record<string, Reducer>
@@ -40,20 +39,20 @@ export function removeReducer(key: string) {
   store.replaceReducer(createReducer())
 }
 
-export function useInjectReducer(
-  key: string,
-  reducer: Reducer,
-  removeOnUnmount = true
-) {
-  useEffect(() => {
-    injectReducer(key, reducer)
-    return () => {
-      if (removeOnUnmount) {
-        removeReducer(key)
-      }
-    }
-  }, [key, reducer])
-}
+// export function useInjectReducer(
+//   key: string,
+//   reducer: Reducer,
+//   removeOnUnmount = true
+// ) {
+//   useEffect(() => {
+//     injectReducer(key, reducer)
+//     return () => {
+//       if (removeOnUnmount) {
+//         removeReducer(key)
+//       }
+//     }
+//   }, [key, reducer])
+// }
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

@@ -1,6 +1,6 @@
 import "./VideoView.css"
-import { useEffect, useRef } from "react";
-import {useDynamicSlice} from "@/store/hooks";
+import {useEffect, useRef} from "react";
+import {useAppDispatch, useDynamicSlice} from "@/store/hooks";
 import {createVideoSlice, type VideoState} from "../videoSlice";
 import { srcLocal } from "@/hooks/utils";
 import useOnload from "@/hooks/useOnload";
@@ -8,19 +8,17 @@ import useOnload from "@/hooks/useOnload";
 function VideoView() {
   const videoId = "video"
   const videoRef = useRef<HTMLVideoElement>(null);
-
   const {
     state: videoState,
-    actions: videoActions,
-    dispatch
+    actions: videoActions
   } = useDynamicSlice<VideoState>(videoId, createVideoSlice)
-
+  const dispatch = useAppDispatch();
   const {onLoad} = useOnload();
 
   onLoad(() => {
 
     if (videoActions === undefined) return;
-    console.log("onload")
+    console.log("onload", videoState)
 
     dispatch(videoActions.setMediaPath("C:\\Users\\kkt\\Downloads\\english\\1초면 구분합니다! ｜ 원어민만 느끼는 뉘앙스 구분법 [bfsY18cvveo].mp4"))
   })
@@ -162,7 +160,6 @@ function VideoView() {
       video.load();
     }
   }, [videoState?.mediaPath])
-  console.log('videoState', videoState)
   return (
     <>
       <div>
