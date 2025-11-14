@@ -2,6 +2,7 @@ import * as React from "react";
 import {type DragSourceMonitor, useDrag} from "react-dnd";
 // import {type CSSProperties, useMemo, useState} from "react";
 import classnames from 'classnames';
+import type {JustStack} from "@/app/just-layout/justLayoutSlice.ts";
 
 // const style: CSSProperties = {
 //   border: '1px dashed gray',
@@ -10,7 +11,7 @@ import classnames from 'classnames';
 // }
 
 interface Prop {
-  winId: string
+  justStack: JustStack
 }
 
 function JustWinTitleView({}: Prop) {

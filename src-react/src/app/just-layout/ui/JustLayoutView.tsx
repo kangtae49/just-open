@@ -2,9 +2,9 @@ import "./JustLayoutView.css"
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import {useAppDispatch, useDynamicSlice} from "@/store/hooks.ts";
-import JustWinView from "./JustWinView.tsx";
-import {createJustLayoutSlice, type JustLayoutState} from "../justLayoutSlice.ts";
+import {createJustLayoutSlice, type JustLayoutActions, type JustLayoutState} from "../justLayoutSlice.ts";
 import useOnload from "@/hooks/useOnload.ts";
+import {JustNodeView} from "@/app/just-layout/ui/JustNodeView.tsx";
 
 interface Props {
 
@@ -14,9 +14,9 @@ export function JustLayoutView({}: Props) {
   const layoutId = "just-layout"
   const {onLoad} = useOnload();
   const {
-    // state: justLayoutState,
+    state: justLayoutState,
     actions: justLayoutActions
-  } = useDynamicSlice<JustLayoutState>(layoutId, createJustLayoutSlice)
+  } = useDynamicSlice<JustLayoutState, JustLayoutActions>(layoutId, createJustLayoutSlice)
   const dispatch = useAppDispatch();
   onLoad(() => {
     dispatch(justLayoutActions.insertNode({ branch: null, winId: "winId01" }))
@@ -29,8 +29,7 @@ export function JustLayoutView({}: Props) {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="just-layout">
-        <JustWinView winId={""} />
-        <JustWinView winId={""} />
+        {justLayoutState && <JustNodeView node={justLayoutState.layout} justBranch={[]} />}
       </div>
     </DndProvider>
   )

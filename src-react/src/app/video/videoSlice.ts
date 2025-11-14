@@ -39,3 +39,6 @@ export const createVideoSlice  = (id: string) =>
     }
   });
 
+export type VideoSlice = ReturnType<typeof createVideoSlice>;
+
+export type VideoActions = VideoSlice["actions"];

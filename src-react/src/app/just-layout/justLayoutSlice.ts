@@ -1,18 +1,19 @@
 import {createSlice} from "@reduxjs/toolkit";
 import update from "immutability-helper"
 export type JustDirection = 'row' | 'column';
+export type JustSplitType = 'first' | 'second';
 
 export type JustNode = JustStack | JustSplit
 
-export type JustBranch = JustDirection []
+export type JustBranch = JustSplitType []
 
-interface JustStack {
+export interface JustStack {
   type: 'stack'
   tabs: string[]
   active: string
 }
 
-interface JustSplit {
+export interface JustSplit {
   type: 'split'
   direction: JustDirection
   first: JustNode
@@ -101,6 +102,10 @@ export const createJustLayoutSlice = (id: string) =>
     }
   })
 
+export type JustLayoutSlice = ReturnType<typeof createJustLayoutSlice>;
+
+export type JustLayoutActions = JustLayoutSlice["actions"];
+
 function makeNested(path: (string | number)[], value:any): any {
   return path.reduceRight((acc, key) => ({ [key]: acc }), value)
 }
@@ -108,5 +113,3 @@ function getByPath<T extends object>(obj: T, path: (string | number)[]): any {
   return path.reduce((acc: any, key) => (acc == null ? undefined : acc[key]), obj)
 }
 
-// export const justLayoutActions = justLayoutSlice.actions;
-// export default justLayoutSlice.reducer;
