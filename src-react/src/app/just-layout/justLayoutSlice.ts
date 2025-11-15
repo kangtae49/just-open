@@ -1,5 +1,6 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, current} from "@reduxjs/toolkit";
 import update from "immutability-helper"
+
 export type JustDirection = 'row' | 'column';
 export type JustSplitType = 'first' | 'second';
 
@@ -41,7 +42,7 @@ export const createJustLayoutSlice = (id: string) =>
             tabs: [payload.winId],
             active: payload.winId,
           }
-        } else if (payload.branch == null) {
+        } else if (payload.branch.length === 0) {
           state.layout = {
             type: 'split',
             direction: payload.direction ?? 'row',
@@ -51,6 +52,7 @@ export const createJustLayoutSlice = (id: string) =>
               active: payload.winId,
             },
             second: {...state.layout},
+            splitPercentage: 50,
           }
         } else {
           const curNode = getByPath(state.layout, payload.branch);
@@ -61,12 +63,12 @@ export const createJustLayoutSlice = (id: string) =>
             tabs: newTabs,
             active: newActive,
           }})
-          update(state.layout, patch)
+          state.layout = update(current(state.layout), patch)
         }
       },
       removeNode: (state, { payload }) => {
         if (state.layout == null) return;
-        if (payload.branch == null) {
+        if (payload.branch.length === 0) {
           const newLayout = {...state.layout} as JustStack;
           const newTabs = newLayout.tabs.filter((tab: string) => tab !== payload.winId);
           if (newTabs.length === 0) {
@@ -88,16 +90,24 @@ export const createJustLayoutSlice = (id: string) =>
             const newOtherNode = {...otherNode} as JustSplit
             newOtherNode.splitPercentage = 50
             const patch = makeNested(parentBranch, { $set: newOtherNode})
-            update(state.layout, patch)
+            state.layout = update(current(state.layout), patch)
           } else {
             const patch = makeNested(payload.branch, { $set: {
                 type: 'stack',
                 tabs: newTabs,
                 active: newActivIdx >= 0 ? newTabs[newActivIdx] : newTabs[0],
               }})
-            update(state.layout, patch)
+            state.layout = update(current(state.layout), patch)
           }
         }
+      },
+      updateResize: (state, { payload }) => {
+        if (state.layout == null) return;
+        const patch = makeNested(payload.branch, { $merge: {
+            splitPercentage: payload.splitPercentage,
+            test: 'abc'
+          }})
+        state.layout = update(current(state.layout), patch)
       },
     }
   })

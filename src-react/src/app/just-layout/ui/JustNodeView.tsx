@@ -1,7 +1,15 @@
-import type {JustBranch, JustNode} from "@/app/just-layout/justLayoutSlice.ts";
+import {
+  createJustLayoutSlice,
+  type JustBranch,
+  type JustLayoutActions,
+  type JustLayoutState,
+  type JustNode
+} from "@/app/just-layout/justLayoutSlice.ts";
 import JustWinView from "@/app/just-layout/ui/JustWinView.tsx";
 import classNames from "classnames";
 import * as React from "react";
+import {useAppDispatch, useDynamicSlice} from "@/store/hooks.ts";
+import JustSplit from "@/app/just-layout/ui/JustSplit.tsx";
 
 interface Props {
   justBranch: JustBranch
@@ -9,9 +17,21 @@ interface Props {
 }
 
 export const JustNodeView: React.FC<Props> = ({ node, justBranch }) => {
+  const layoutId = "just-layout"
+  const {
+    // state: justLayoutState,
+    actions: justLayoutActions
+  } = useDynamicSlice<JustLayoutState, JustLayoutActions>(layoutId, createJustLayoutSlice)
+  const dispatch = useAppDispatch();
+
+  const onResize= (splitPercentage: number) => {
+    dispatch(justLayoutActions.updateResize({ branch: justBranch, splitPercentage }))
+  }
+
   if (node?.type === 'stack') {
     return (
-      <JustWinView justStack={node} justBranch={justBranch} />
+      <JustWinView justStack={node} justBranch={justBranch}
+      />
     );
   }
 
@@ -19,7 +39,8 @@ export const JustNodeView: React.FC<Props> = ({ node, justBranch }) => {
     const splitPercentage = node.splitPercentage ?? 50;
 
     return (
-      <div className={classNames(
+      <div key={`JustNode-${justBranch.join(",")}`}
+        className={classNames(
         {
           "just-column": node.direction === 'column',
           "just-row": node.direction === 'row'
@@ -35,8 +56,14 @@ export const JustNodeView: React.FC<Props> = ({ node, justBranch }) => {
         >
           <JustNodeView node={node.first} justBranch={[...justBranch, "first"]} />
         </div>
-        <div className={classNames("just-splitter")}>
-        </div>
+
+        <JustSplit
+          direction={node.direction}
+          justBranch={justBranch}
+          onChange={onResize}
+          onRelease={onResize}
+        />
+
         <div className="just-second">
           <JustNodeView node={node.second} justBranch={[...justBranch, "second"]} />
         </div>

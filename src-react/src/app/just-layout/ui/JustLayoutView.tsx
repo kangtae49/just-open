@@ -19,11 +19,11 @@ export function JustLayoutView({}: Props) {
   } = useDynamicSlice<JustLayoutState, JustLayoutActions>(layoutId, createJustLayoutSlice)
   const dispatch = useAppDispatch();
   onLoad(() => {
-    dispatch(justLayoutActions.insertNode({ branch: null, winId: "winId01" }))
-    dispatch(justLayoutActions.removeNode({ branch: null, winId: "winId01" }))
-    dispatch(justLayoutActions.insertNode({ branch: null, winId: "winId01" }))
-    dispatch(justLayoutActions.insertNode({ branch: null, winId: "winId02" }))
-    dispatch(justLayoutActions.insertNode({ branch: null, winId: "winId03" }))
+    dispatch(justLayoutActions.insertNode({ branch: [], winId: "winId01" }))
+    dispatch(justLayoutActions.removeNode({ branch: [], winId: "winId01" }))
+    dispatch(justLayoutActions.insertNode({ branch: [], winId: "winId01" }))
+    dispatch(justLayoutActions.insertNode({ branch: [], winId: "winId02" }))
+    dispatch(justLayoutActions.insertNode({ branch: [], winId: "winId03" }))
 
   })
   return (
