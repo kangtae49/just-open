@@ -9,7 +9,6 @@ const RESIZE_THROTTLE_MS = 1000 / 30; // 30 fps
 interface Props {
   direction: JustDirection
   justBranch: JustBranch
-  // rect: DOMRect | undefined
   containerRef: React.RefObject<HTMLDivElement | null>
   onChange?: (splitPercentage: number) => void;
   onRelease?: (splitPercentage: number) => void;
