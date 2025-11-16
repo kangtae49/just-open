@@ -10,6 +10,7 @@ import classNames from "classnames";
 import * as React from "react";
 import {useAppDispatch, useDynamicSlice} from "@/store/hooks.ts";
 import JustSplit from "@/app/just-layout/ui/JustSplit.tsx";
+import {useRef} from "react";
 
 interface Props {
   justBranch: JustBranch
@@ -18,6 +19,8 @@ interface Props {
 
 export const JustNodeView: React.FC<Props> = ({ node, justBranch }) => {
   const layoutId = "just-layout"
+  const refNode = useRef<HTMLDivElement>(null);
+
   const {
     // state: justLayoutState,
     actions: justLayoutActions
@@ -27,49 +30,45 @@ export const JustNodeView: React.FC<Props> = ({ node, justBranch }) => {
   const onResize= (splitPercentage: number) => {
     dispatch(justLayoutActions.updateResize({ branch: justBranch, splitPercentage }))
   }
+  return (
+    <div className="just-node" ref={refNode}>
+      {node?.type === 'stack' && (
+        <JustWinView justStack={node} justBranch={justBranch} />
+      )}
+      {node?.type === 'split' && (
+        <div key={`JustNode-${justBranch.join(",")}`}
+             className={classNames(
+               {
+                 "just-column": node.direction === 'column',
+                 "just-row": node.direction === 'row'
+               }
+             )}>
+          <div
+            className="just-first"
+            style={{
+              flexBasis: `calc(${node.splitPercentage}% - 2px)`,
+              flexGrow: 0,
+              flexShrink: 0,
+            }}
+          >
+            <JustNodeView node={node.first} justBranch={[...justBranch, "first"]} />
+          </div>
 
-  if (node?.type === 'stack') {
-    return (
-      <JustWinView justStack={node} justBranch={justBranch}
-      />
-    );
-  }
+          <JustSplit
+            direction={node.direction}
+            justBranch={justBranch}
+            containerRef={refNode}
+            onChange={onResize}
+            onRelease={onResize}
+          />
 
-  if (node?.type === 'split') {
-    const splitPercentage = node.splitPercentage ?? 50;
-
-    return (
-      <div key={`JustNode-${justBranch.join(",")}`}
-        className={classNames(
-        {
-          "just-column": node.direction === 'column',
-          "just-row": node.direction === 'row'
-        }
-      )}>
-        <div
-          className="just-first"
-          style={{
-            flexBasis: `calc(${splitPercentage}% - 2px)`,
-            flexGrow: 0,
-            flexShrink: 0,
-          }}
-        >
-          <JustNodeView node={node.first} justBranch={[...justBranch, "first"]} />
+          <div className="just-second">
+            <JustNodeView node={node.second} justBranch={[...justBranch, "second"]} />
+          </div>
         </div>
+      )}
 
-        <JustSplit
-          direction={node.direction}
-          justBranch={justBranch}
-          onChange={onResize}
-          onRelease={onResize}
-        />
+    </div>
+  )
 
-        <div className="just-second">
-          <JustNodeView node={node.second} justBranch={[...justBranch, "second"]} />
-        </div>
-      </div>
-    );
-  }
-
-  return null;
 };

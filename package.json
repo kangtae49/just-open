@@ -8,6 +8,7 @@
 		"redux-devtools-app": "npx redux-devtools-app"
 	},
 	"devDependencies": {
-		"@redux-devtools/app": "^7.0.0"
+		"@redux-devtools/app": "^7.0.0",
+		"@types/lodash": "^4.17.20"
 	}
 }

@@ -19,7 +19,7 @@ export interface JustSplit {
   direction: JustDirection
   first: JustNode
   second: JustNode
-  splitPercentage?: number
+  splitPercentage: number
 }
 
 export interface JustLayoutState {
@@ -105,7 +105,6 @@ export const createJustLayoutSlice = (id: string) =>
         if (state.layout == null) return;
         const patch = makeNested(payload.branch, { $merge: {
             splitPercentage: payload.splitPercentage,
-            test: 'abc'
           }})
         state.layout = update(current(state.layout), patch)
       },
