@@ -2,15 +2,22 @@ import "./JustLayoutView.css"
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import {useAppDispatch, useDynamicSlice} from "@/store/hooks.ts";
-import {createJustLayoutSlice, type JustLayoutActions, type JustLayoutState} from "../justLayoutSlice.ts";
+import {
+  createJustLayoutSlice,
+  type JustLayoutActions,
+  type JustLayoutState,
+  type JustNode,
+  type WinInfo
+} from "../justLayoutSlice.ts";
 import useOnload from "@/hooks/useOnload.ts";
 import {JustNodeView} from "@/app/just-layout/ui/JustNodeView.tsx";
 
 interface Props {
-
+  viewMap: Record<string, WinInfo>
+  initialValue: JustNode
 }
 
-export function JustLayoutView({}: Props) {
+export function JustLayoutView({viewMap, initialValue}: Props) {
   const layoutId = "just-layout"
   const {onLoad} = useOnload();
   const {
@@ -19,17 +26,20 @@ export function JustLayoutView({}: Props) {
   } = useDynamicSlice<JustLayoutState, JustLayoutActions>(layoutId, createJustLayoutSlice)
   const dispatch = useAppDispatch();
   onLoad(() => {
-    dispatch(justLayoutActions.insertNode({ branch: [], winId: "winId01", direction: 'row' }))
-    dispatch(justLayoutActions.removeNode({ branch: [], winId: "winId01" }))
-    dispatch(justLayoutActions.insertNode({ branch: [], winId: "winId01", direction: 'row' }))
-    dispatch(justLayoutActions.insertNode({ branch: [], winId: "winId02", direction: 'column' }))
-    dispatch(justLayoutActions.insertNode({ branch: [], winId: "winId03", direction: 'row' }))
+    dispatch(justLayoutActions.setLayout(initialValue))
+
+    // dispatch(justLayoutActions.insertWin({ branch: [], winId: "winId01", direction: 'row', pos: 'first' }))
+    // dispatch(justLayoutActions.removeWin({ branch: [], winId: "winId01" }))
+    // dispatch(justLayoutActions.insertWin({ branch: [], winId: "winId01", direction: 'row', pos: 'first' }))
+    // dispatch(justLayoutActions.insertWin({ branch: [], winId: "winId02", direction: 'column', pos: 'second' }))
+    // dispatch(justLayoutActions.insertWin({ branch: [], winId: "winId03", direction: 'row', pos: 'first' }))
+    // dispatch(justLayoutActions.insertWin({ branch: ['second', 'second'], winId: "winId04", direction: 'row', pos: 'stack' }))
 
   })
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="just-layout">
-        {justLayoutState && <JustNodeView node={justLayoutState.layout} justBranch={[]} />}
+        {justLayoutState && <JustNodeView node={justLayoutState.layout} justBranch={[]} viewMap={viewMap}/>}
       </div>
     </DndProvider>
   )

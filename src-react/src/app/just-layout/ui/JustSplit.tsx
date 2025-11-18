@@ -20,7 +20,6 @@ function JustSplit({ direction, containerRef, onChange, onRelease }: Props) {
 
   const bindListeners = () => {
     if (!listenersBound) {
-      console.log("bindListeners")
       refSplit.current!.ownerDocument!.addEventListener('mousemove', onMouseMove, true);
       refSplit.current!.ownerDocument!.addEventListener('mouseup', onMouseUp, true);
       setListenersBound(true)
@@ -28,9 +27,7 @@ function JustSplit({ direction, containerRef, onChange, onRelease }: Props) {
   }
 
   const unbindListeners = () => {
-    console.log("unbindListeners", refSplit.current)
     if (refSplit.current) {
-      console.log("unbindListeners")
       refSplit.current.ownerDocument!.removeEventListener('mousemove', onMouseMove, true);
       refSplit.current.ownerDocument!.removeEventListener('mouseup', onMouseUp, true);
       setListenersBound(false);
@@ -46,7 +43,6 @@ function JustSplit({ direction, containerRef, onChange, onRelease }: Props) {
   };
 
   const onMouseUp = (event: MouseEvent) => {
-    console.log("onMouseUp", event)
     unbindListeners();
     if (containerRef == undefined) return;
 
@@ -77,7 +73,6 @@ function JustSplit({ direction, containerRef, onChange, onRelease }: Props) {
   const throttledUpdatePercentage = throttle((event: MouseEvent, containerRef: React.RefObject<HTMLDivElement | null>) => {
     if (containerRef.current == null) return null;
     const percentage = calculateRelativePercentage(event, containerRef)
-    console.log('percentage', percentage, event)
     if (percentage !== null) {
       onChange!(percentage)
     }

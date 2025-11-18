@@ -1,8 +1,9 @@
 import * as React from "react";
-import {type DragSourceMonitor, useDrag} from "react-dnd";
+import {type DropTargetMonitor, useDrop} from "react-dnd";
 // import {type CSSProperties, useMemo, useState} from "react";
 import classnames from 'classnames';
-import type {JustStack} from "@/app/just-layout/justLayoutSlice.ts";
+import type {JustBranch, JustStack, WinInfo} from "@/app/just-layout/justLayoutSlice.ts";
+import JustDraggableTitle, {type DragItem} from "@/app/just-layout/ui/JustDraggableTitle.tsx";
 
 // const style: CSSProperties = {
 //   border: '1px dashed gray',
@@ -11,17 +12,29 @@ import type {JustStack} from "@/app/just-layout/justLayoutSlice.ts";
 // }
 
 interface Prop {
+  justBranch: JustBranch
   justStack: JustStack
+  viewMap: Record<string, WinInfo>
 }
 
-function JustWinTitleView({}: Prop) {
+function JustWinTitleView({justBranch, justStack, viewMap}: Prop) {
+
+  const onDrop = (itemType: any, item: DragItem) => {
+    console.log("onDrop", itemType, item)
+  }
+
   // const [forbidDrag, setForbidDrag] = useState(false)
-  const [{ isDragging }, drag] = useDrag(
+  const [{ isOver }, drop] = useDrop(
     () => ({
-      type: 'DRAG-SOURCE-JUST-TITLE',
-      canDrag: true,
-      collect: (monitor: DragSourceMonitor) => ({
-        isDragging: monitor.isDragging(),
+      accept: ['DRAG-SOURCE-JUST-TITLE'],
+      drop(item: DragItem, monitor) {
+        console.log("drop item", item)
+        onDrop(monitor.getItemType(), monitor.getItem())
+        return undefined
+      },
+      collect: (monitor: DropTargetMonitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
       }),
     }),
   )
@@ -42,10 +55,17 @@ function JustWinTitleView({}: Prop) {
 
   return (
     <div
-      className={classnames("just-win-title", {"dragging": isDragging})}
-      ref={drag as unknown as React.Ref<HTMLDivElement>}
+      className={classnames("just-win-title", {"isOver": isOver})}
+      ref={drop as unknown as React.Ref<HTMLDivElement>}
     >
-      TabWinTitleView
+
+      {justStack.tabs.map(winId =>
+        <JustDraggableTitle
+          key={[...justBranch, winId].join(",")}
+          winId={winId}
+          justBranch={justBranch}
+          winInfo={viewMap[winId]}/>
+      )}
     </div>
   )
 }

@@ -41,6 +41,8 @@
     cursor: move;
     border: 1px dashed gray;
     box-sizing: border-box;
-    /*padding: 0.5rem;*/
-    /*margin: '0.5rem',*/
 }
+.just-win-title { display: flex;}
+.just-draggable-title { display: flex; margin: 0; padding: 0; height: 25px;}
+.just-draggable-title .just-icon { flex: 1 1 20px; }
+.just-draggable-title .just-title { flex: 1; }
