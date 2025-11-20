@@ -17,13 +17,14 @@ interface Props {
   initialValue: JustNode
 }
 
+export const LAYOUT_ID = "just-layout"
+
 export function JustLayoutView({viewMap, initialValue}: Props) {
-  const layoutId = "just-layout"
   const {onLoad} = useOnload();
   const {
     state: justLayoutState,
     actions: justLayoutActions
-  } = useDynamicSlice<JustLayoutState, JustLayoutActions>(layoutId, createJustLayoutSlice)
+  } = useDynamicSlice<JustLayoutState, JustLayoutActions>(LAYOUT_ID, createJustLayoutSlice)
   const dispatch = useAppDispatch();
   onLoad(() => {
     dispatch(justLayoutActions.setLayout(initialValue))
