@@ -50,6 +50,7 @@ export const JustNodeView: React.FC<Props> = ({ node, justBranch, viewMap }) => 
               flexBasis: `calc(${node.splitPercentage}% - 2px)`,
               flexGrow: 0,
               flexShrink: 0,
+              minWidth: 0,
             }}
           >
             <JustNodeView node={node.first} justBranch={[...justBranch, "first"]} viewMap={viewMap} />

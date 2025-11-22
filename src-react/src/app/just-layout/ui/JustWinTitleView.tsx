@@ -1,6 +1,5 @@
 import * as React from "react";
 import {type DropTargetMonitor, useDrop} from "react-dnd";
-// import {type CSSProperties, useMemo, useState} from "react";
 import classnames from 'classnames';
 import {
   createJustLayoutSlice,
@@ -14,11 +13,6 @@ import JustDraggableTitle, {type DragItem} from "@/app/just-layout/ui/JustDragga
 import {useAppDispatch, useDynamicSlice} from "@/store/hooks.ts";
 import {LAYOUT_ID} from "@/app/just-layout/ui/JustLayoutView.tsx";
 
-// const style: CSSProperties = {
-//   border: '1px dashed gray',
-//   padding: '0.5rem',
-//   margin: '0.5rem',
-// }
 
 interface Prop {
   justBranch: JustBranch
@@ -34,20 +28,19 @@ function JustWinTitleView({justBranch, justStack, viewMap}: Prop) {
   const dispatch = useAppDispatch();
 
 
-
-
-
   const onDrop = (itemType: any, item: DragItem) => {
     console.log("onDrop(JustWinTitle)", itemType, item)
-    dispatch(justLayoutActions.moveWin({
-      sourceBranch: item.justBranch,
-      targetBranch: justBranch,
-      winId: item.winId,
-      index: item.index,
-    }))
+    dispatch(
+      justLayoutActions.moveWin({
+        branch: justBranch,
+        winId: item.winId,
+        direction: item.direction,
+        pos: 'stack',
+        index: item.index
+      })
+    )
   }
 
-  // const [forbidDrag, setForbidDrag] = useState(false)
   const [{ isOver }, drop] = useDrop(
     () => ({
       accept: ['DRAG-SOURCE-JUST-TITLE'],
@@ -62,19 +55,6 @@ function JustWinTitleView({justBranch, justStack, viewMap}: Prop) {
       },
     }),
   )
-  // const onToggleForbidDrag = useCallback(() => {
-  //   setForbidDrag(!forbidDrag)
-  // }, [forbidDrag, setForbidDrag])
-
-  // const containerStyle = useMemo(
-  //   () => ({
-  //     ...style,
-  //     backgroundColor: '#efefef',
-  //     opacity: isDragging ? 0.4 : 1,
-  //     cursor: forbidDrag ? 'default' : 'move',
-  //   }),
-  //   [isDragging, forbidDrag],
-  // )
 
 
   return (

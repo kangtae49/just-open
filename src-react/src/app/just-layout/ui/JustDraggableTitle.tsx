@@ -1,4 +1,4 @@
-import type {JustBranch, JustStack, WinInfo} from "@/app/just-layout/justLayoutSlice.ts";
+import type {JustBranch, JustDirection, JustPos, JustStack, WinInfo} from "@/app/just-layout/justLayoutSlice.ts";
 import {type DragSourceMonitor, useDrag, useDrop} from "react-dnd";
 import type { XYCoord } from 'react-dnd';
 import classnames from "classnames";
@@ -7,6 +7,8 @@ import {useRef} from "react";
 export interface DragItem {
   justBranch: JustBranch
   winId: string
+  direction: JustDirection
+  pos: JustPos
   index: number
 }
 
@@ -59,8 +61,8 @@ function JustDraggableTitle(props: Prop) {
         return
       }
       const hoverBoundingRect = ref.current?.getBoundingClientRect()
-      const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2
       const clientOffset = monitor.getClientOffset()
+      const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2
       const hoverClientX = (clientOffset as XYCoord).x - hoverBoundingRect.left
 
       const sourceWinId = item.winId;
@@ -71,6 +73,7 @@ function JustDraggableTitle(props: Prop) {
       if (hoverClientX > hoverMiddleX) {
         targetIndex += 1
       }
+      item.pos = 'stack'
       item.index = targetIndex
     }
   })
@@ -78,7 +81,7 @@ function JustDraggableTitle(props: Prop) {
   drag(drop(ref))
   console.log("JustDraggableTitle", winId, winInfo)
   return (
-    winInfo !== undefined && <div
+    <div
       className={classnames("just-draggable-title", {"dragging": isDragging})}
       // ref={drag as unknown as React.Ref<HTMLDivElement>}
       ref={ref}

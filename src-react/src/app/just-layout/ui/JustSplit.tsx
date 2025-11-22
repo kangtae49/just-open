@@ -3,6 +3,7 @@ import {useEffect, useRef} from "react";
 import type {JustBranch, JustDirection} from "@/app/just-layout/justLayoutSlice.ts";
 import classNames from "classnames";
 import throttle from 'lodash/throttle';
+import clamp from "lodash/clamp";
 
 const RESIZE_THROTTLE_MS = 1000 / 30; // 30 fps
 
@@ -66,8 +67,7 @@ function JustSplit({ direction, containerRef, onChange, onRelease }: Props) {
     const containerSize = direction === 'row' ? rect.width : rect.height;
     let percentage = (MousePos - containerPos) * 100 / containerSize;
 
-    percentage = Math.max(percentage, 0);
-    percentage = Math.min(percentage, 100);
+    percentage = clamp(percentage, 0, 100);
     return percentage;
   }
   const throttledUpdatePercentage = throttle((event: MouseEvent, containerRef: React.RefObject<HTMLDivElement | null>) => {

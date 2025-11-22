@@ -12,7 +12,7 @@ function JustWinView ({justBranch, justStack, viewMap}: Prop) {
   return (
     <div className="just-win">
       <JustWinTitleView justBranch={justBranch} justStack={justStack} viewMap={viewMap} />
-      <JustWinBodyView  winId={justStack.active} />
+      <JustWinBodyView justBranch={justBranch} justStack={justStack} viewMap={viewMap} />
     </div>
   )
 }

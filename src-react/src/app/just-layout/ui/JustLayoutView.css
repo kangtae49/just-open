@@ -26,16 +26,16 @@
 
 .just-layout .just-column { display: flex; flex-direction: column; width: 100%; height: 100%; }
 .just-layout .just-row { display: flex; flex-direction: row; width: 100%; height: 100%; }
-.just-layout .just-first { display: flex;}
-.just-layout .just-second { display: flex; flex: 1;}
+.just-layout .just-first { display: flex; overflow: hidden;}
+.just-layout .just-second { display: flex; flex: 1; overflow: hidden;}
 .just-layout .just-splitter {
     flex: 0 0 4px;
     border: 1px solid gray;
     box-sizing: border-box;
 }
 
-.just-row .just-splitter { cursor: ew-resize;}
-.just-column .just-splitter { cursor: ns-resize; }
+.just-row > .just-splitter { cursor: ew-resize;}
+.just-column > .just-splitter { cursor: ns-resize; }
 
 .dragging {
     cursor: move;

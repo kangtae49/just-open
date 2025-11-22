@@ -1,6 +1,6 @@
 import {createSlice, current} from "@reduxjs/toolkit";
 import {type JSX} from "react";
-import {insertWin, moveWin, removeWin, updateResize} from "@/app/just-layout/ui/layoutUtil.ts";
+import {insertWinId, moveWinId, removeWinId, updateSplitPercentage} from "@/app/just-layout/ui/layoutUtil.ts";
 
 export type JustDirection = 'row' | 'column';
 export type JustSplitType = 'first' | 'second';
@@ -34,7 +34,6 @@ export interface JustPayloadInsert {
 }
 
 export interface JustPayloadRemove {
-  branch: JustBranch
   winId: string
 }
 
@@ -43,12 +42,21 @@ export interface JustPayloadResize {
   splitPercentage: number
 }
 
-export interface JustPayloadMove {
-  sourceBranch: JustBranch
-  targetBranch: JustBranch
+export interface JustPayloadMoveWin {
+  branch: JustBranch
   winId: string
+  direction: JustDirection
+  pos: JustPos
   index: number
 }
+
+// export interface JustPayloadMoveSplit {
+//   sourceBranch: JustBranch
+//   targetBranch: JustBranch
+//   winId: string
+//   direction: JustDirection
+//   split: JustSplitType
+// }
 
 export interface JustLayoutState {
   layout: JustNode | null
@@ -72,18 +80,42 @@ export const createJustLayoutSlice = (id: string) =>
     reducers: {
       setLayout: (state, { payload }: {payload: JustNode}) => { state.layout = payload },
       insertWin: (state, { payload }: {payload: JustPayloadInsert}) => {
-        state.layout = insertWin(current(state.layout), payload)
+        state.layout = insertWinId(
+          current(state.layout),
+          payload.winId,
+          payload.branch,
+          payload.pos,
+          payload.direction,
+          payload.index
+        )
       },
       removeWin: (state, { payload }: {payload: JustPayloadRemove}) => {
-        state.layout = removeWin(current(state.layout), payload)
-      },
-      moveWin: (state, { payload }: {payload: JustPayloadMove}) => {
-        state.layout = moveWin(current(state.layout), payload)
+        state.layout = removeWinId(
+          current(state.layout),
+          payload.winId
+        )
       },
       updateResize: (state, { payload }: {payload: JustPayloadResize}) => {
-        state.layout = updateResize(current(state.layout), payload)
+        state.layout = updateSplitPercentage(
+          current(state.layout),
+          payload.branch,
+          payload.splitPercentage
+        )
       },
-
+      moveWin: (state, { payload }: {payload: JustPayloadMoveWin}) => {
+        state.layout = moveWinId(
+          current(state.layout),
+          payload.winId,
+          payload.branch,
+          payload.pos,
+          payload.direction,
+          payload.index
+        )
+      },
+      // moveSplit: (state, { payload }: {payload: JustPayloadMoveSplit}) => {
+      //
+      //   state.layout = moveSplit(current(state.layout), payload)
+      // },
     }
   })
 
