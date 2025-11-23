@@ -16,8 +16,19 @@
 }
 
 .just-win .just-win-title {
-    cursor: move;
+    display: flex;
     box-sizing: border-box;
+
+}
+
+.just-win-title .just-title-list {
+    flex: 1;
+    overflow: hidden;
+    cursor: move;
+    display: flex;
+}
+.just-win-title .just-title-menu {
+    flex: 0 0 25px;
 }
 
 .just-win .just-win-body {

@@ -1,6 +1,8 @@
-import * as React from "react";
 import {type DropTargetMonitor, useDrop} from "react-dnd";
-import classnames from 'classnames';
+import classNames from 'classnames';
+import {FontAwesomeIcon as Icon} from "@fortawesome/react-fontawesome"
+import {faEllipsisVertical} from "@fortawesome/free-solid-svg-icons"
+
 import {
   createJustLayoutSlice,
   type JustBranch,
@@ -12,6 +14,7 @@ import {
 import JustDraggableTitle, {type DragItem} from "@/app/just-layout/ui/JustDraggableTitle.tsx";
 import {useAppDispatch, useDynamicSlice} from "@/store/hooks.ts";
 import {LAYOUT_ID} from "@/app/just-layout/ui/JustLayoutView.tsx";
+import {useRef} from "react";
 
 
 interface Prop {
@@ -21,6 +24,7 @@ interface Prop {
 }
 
 function JustWinTitleView({justBranch, justStack, viewMap}: Prop) {
+  const ref = useRef<HTMLDivElement>(null)
   const {
     // state: justLayoutState,
     actions: justLayoutActions
@@ -56,22 +60,25 @@ function JustWinTitleView({justBranch, justStack, viewMap}: Prop) {
     }),
   )
 
-
+  drop(ref)
   return (
     <div
-      className={classnames("just-win-title", {"isOver": isOver})}
-      ref={drop as unknown as React.Ref<HTMLDivElement>}
+      className={classNames("just-win-title")}
     >
-
-      {justStack.tabs.map(winId =>
-        <JustDraggableTitle
-          key={[...justBranch, winId].join(",")}
-          winId={winId}
-          justBranch={justBranch}
-          justStack={justStack}
-          winInfo={viewMap[winId]}
-        />
-      )}
+      <div className={classNames("just-title-list", {"is-over": isOver})} ref={ref}>
+        {justStack.tabs.map(winId =>
+          <JustDraggableTitle
+            key={[...justBranch, winId].join(",")}
+            winId={winId}
+            justBranch={justBranch}
+            justStack={justStack}
+            winInfo={viewMap[winId]}
+          />
+        )}
+      </div>
+      <div className="just-title-menu">
+        <Icon icon={faEllipsisVertical} />
+      </div>
     </div>
   )
 }
