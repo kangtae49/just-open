@@ -101,7 +101,7 @@ function JustWinBodyView (props: Prop) {
       className={classnames("just-win-body", {"isOver": isOver})}
       ref={ref}
     >
-      {justStack.active !== "" && viewMap[justStack.active].view}
+      {justStack.active !== null && viewMap[justStack.active].view}
     </div>
   )
 }

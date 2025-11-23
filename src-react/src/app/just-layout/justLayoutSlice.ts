@@ -12,7 +12,7 @@ export type JustBranch = JustSplitType []
 export interface JustStack {
   type: 'stack'
   tabs: string[]
-  active: string
+  active: string | null
 }
 
 export interface JustSplit {

@@ -11,25 +11,6 @@ import update from "immutability-helper"
 import clamp from "lodash/clamp";
 
 
-
-// export function insertWinId(layout: JustNode | null, winId: string, index: number): JustNode | null {
-//   if (layout == null) return null;
-//   const justStack = getNodeByWinId(layout, winId) as unknown as JustStack | null
-//   if (justStack == null) return layout;
-//   const newTabs = [
-//     justStack.tabs.slice(0, index),
-//     winId,
-//     justStack.tabs.slice(index),
-//   ]
-//   return updateNodeOfWinId(layout, winId, {
-//     $set: {
-//       ...justStack,
-//       tabs: newTabs,
-//       active: winId,
-//     }
-//   })
-// }
-
 export function insertWinId(layout: JustNode | null, winId: string, branch: JustBranch, pos: JustPos, direction: JustDirection, index: number): JustNode | null {
   if (layout == null) {
     // stack
@@ -97,9 +78,9 @@ export function removeWinId(layout: JustNode | null, winId: string): JustNode | 
   const justStack = getNodeByWinId(layout, winId) as unknown as JustStack | null
   if (justStack == null) return layout;
   const newTabs = justStack.tabs.filter((tab: string) => tab !== winId)
-  const active = newTabs.length > 0
-    ? newTabs[clamp(justStack.tabs.indexOf(justStack.active), 0, newTabs.length - 1)]
-    : ''
+  const active = (newTabs.length > 0 && justStack.active !== null)
+    ? newTabs[clamp(justStack.tabs.indexOf(justStack.active), 0, newTabs.length-1)]
+    : null
   return updateNodeOfWinId(layout, winId, {
     $set: {
       ...justStack,
@@ -109,9 +90,54 @@ export function removeWinId(layout: JustNode | null, winId: string): JustNode | 
   })
 }
 
+
+export function removeEmpty(layout: JustNode | null): JustNode | null {
+  if (layout == null) return layout;
+  const branch = findEmptyBranch(layout)
+  if (branch === null || branch.length === 0) return layout;
+  const lastSplitType = branch[branch.length - 1]
+  const parentBranch = branch.slice(0, -1)
+  const otherSplitType = lastSplitType === 'first' ? 'second' : 'first'
+  const otherNode = getNodeByBranch(layout, [...parentBranch, otherSplitType])
+  return updateNodeOfBranch(layout, parentBranch, {
+    $set: otherNode,
+  })
+}
+
+
+export function findEmptyBranch(layout: JustNode | null): JustBranch | null {
+
+  const findFn = (layout: JustNode | null, branch: JustBranch): JustBranch | null => {
+    if( layout === null) return null
+    if (layout.type === 'stack') {
+      if (layout.tabs.length === 0) {
+        return branch
+      } else {
+        return null
+      }
+    } else {
+      const nodeFirst = findFn(layout.first, [...branch, 'first'])
+      if (nodeFirst != null) {
+        return nodeFirst
+      }
+      const nodeSecond = findFn(layout.second, [...branch, 'second'])
+      if (nodeSecond != null) {
+        return nodeSecond
+      }
+      return null
+    }
+  }
+
+  return findFn(layout, [])
+}
+
+
+
+
 export function moveWinId(layout: JustNode | null, winId: string, branch: JustBranch, pos: JustPos, direction: JustDirection, index: number): JustNode | null {
   const newLayout = removeWinId(layout, winId)
-  return insertWinId(newLayout, winId, branch, pos, direction, index)
+  return removeEmpty(insertWinId(newLayout, winId, branch, pos, direction, index))
+
 }
 
 export function updateSplitPercentage(layout: JustNode | null, branch: JustBranch, splitPercentage: number) {
@@ -122,183 +148,6 @@ export function updateSplitPercentage(layout: JustNode | null, branch: JustBranc
   })
 }
 
-
-// export function insertWin(layout: JustNode | null, payload: JustPayloadInsert): JustNode {
-//   const addStack: JustStack = {
-//     type: 'stack',
-//     tabs: [payload.winId],
-//     active: payload.winId,
-//   }
-//   const branch = getBranch(layout, payload.winId, []) ?? []
-//
-//   if (layout == null) {
-//     return addStack
-//   } else if (payload.pos === 'stack') {
-//     const curNode = getNodeByBranch(layout, branch);
-//     if (curNode.type !== 'stack') {
-//       console.log("check branch curNode", curNode)
-//
-//       throw new Error("check branch curNode", curNode)
-//     }
-//     const safeIndex = payload.index < 0 ? curNode.tabs.length : payload.index;
-//
-//     // const newTabs = [...curNode.tabs, payload.winId]
-//     const newTabs = [
-//       ...curNode.tabs.slice(0, safeIndex),
-//       payload.winId,
-//       ...curNode.tabs.slice(safeIndex),
-//     ]
-//     const newActive = payload.winId
-//     const patch = makePatch(payload.branch, { $set: {
-//         type: 'stack',
-//         tabs: newTabs,
-//         active: newActive,
-//       }})
-//     return update(layout, patch)
-//   } else if (payload.pos === 'first') {
-//     const curNode = getNodeByBranch(layout, payload.branch);
-//     const patch = makePatch(payload.branch, {
-//       $set: {
-//         type: 'split',
-//         direction: payload.direction,
-//         first: addStack,
-//         second: curNode,
-//         splitPercentage: 50,
-//       }
-//     })
-//     return update(layout, patch)
-//   } else if (payload.pos === 'second') {
-//     const curNode = getNodeByBranch(layout, branch);
-//     const patch = makePatch(branch, {
-//       $set: {
-//         type: 'split',
-//         direction: payload.direction,
-//         first: curNode,
-//         second: addStack,
-//         splitPercentage: 50,
-//       }
-//     })
-//     return update(layout, patch)
-//   } else {
-//     throw new Error("unknown error")
-//   }
-// }
-//
-// export function removeWin(layout: JustNode | null, payload: JustPayloadRemove): JustNode | null {
-//   if (layout == null) return null;
-//   const branch = getBranch(layout, payload.winId, []) ?? []
-//   if (branch.length === 0) {
-//     const newLayout = {...layout} as JustStack;
-//     let activeIndex = newLayout.tabs.indexOf(payload.winId);
-//
-//     const newTabs = newLayout.tabs.filter((tab: string) => tab !== payload.winId);
-//     activeIndex = clamp(activeIndex, 0, newTabs.length - 1);
-//
-//     if (newTabs.length === 0) {
-//       return null
-//     } else {
-//       return {
-//         ...newLayout,
-//         type: 'stack',
-//         tabs: newTabs,
-//         active: newTabs[activeIndex],
-//       };
-//     }
-//   } else {
-//     const curNode = getNodeByBranch(layout, branch);
-//     if (curNode.type !== 'stack') {
-//       throw new Error("Not stack", curNode)
-//     }
-//
-//     let activeIndex = curNode.tabs.indexOf(payload.winId)
-//     const newTabs: string [] = curNode.tabs.filter((tab: string) => tab !== payload.winId)
-//
-//     activeIndex = clamp(activeIndex, 0, newTabs.length - 1);
-//
-//     if (newTabs.length === 0) {
-//       const lastBranch = branch.at(-1) === 'first' ? 'second' : 'first'
-//       const parentBranch = branch.slice(0, -1)
-//       const otherNode = getNodeByBranch(layout, [...parentBranch, lastBranch])
-//       const newOtherNode = {...otherNode} as JustSplit
-//       newOtherNode.splitPercentage = 50
-//       const patch = makePatch(parentBranch, { $set: newOtherNode})
-//       return update(layout, patch)
-//     } else {
-//       activeIndex = clamp(activeIndex, 0, newTabs.length - 1);
-//
-//       const patch = makePatch(payload.branch, { $set: {
-//           type: 'stack',
-//           tabs: newTabs,
-//           active: newTabs[activeIndex],
-//         }})
-//       return update(layout, patch)
-//     }
-//   }
-// }
-//
-// export function updateResize(layout: JustNode | null, payload: JustPayloadResize): JustNode | null {
-//   if (layout == null) return null;
-//   const patch = makePatch(payload.branch, { $merge: {
-//       splitPercentage: payload.splitPercentage,
-//     }})
-//   return update(layout, patch)
-// }
-//
-// export function moveTab(layout: JustNode | null, payload: JustPayloadMoveTab): JustNode | null {
-//   if (layout == null) return null;
-//   const sourceBranch = getBranch(layout, payload.winId, []) ?? []
-//   if (JSON.stringify(sourceBranch) === JSON.stringify(payload.targetBranch)) {
-//     const curNode = getNodeByBranch(layout, payload.targetBranch);
-//     if (curNode.type !== 'stack') {
-//       console.log("check branch curNode", curNode)
-//       throw new Error("check branch curNode", curNode)
-//     }
-//     let newTabs = curNode.tabs.filter((tab: string) => tab !== payload.winId)
-//     const safeIndex = payload.index < 0 ? newTabs.length : payload.index;
-//     newTabs = [
-//       ...newTabs.slice(0, safeIndex),
-//       payload.winId,
-//       ...newTabs.slice(safeIndex),
-//     ]
-//     console.log("newTabs", newTabs)
-//     const patch = makePatch(payload.targetBranch, {
-//       $set: {
-//         type: 'stack',
-//         tabs: newTabs,
-//         active: payload.winId,
-//       }
-//     })
-//
-//     return update(layout, patch)
-//   } else {
-//     const newLayout = removeWin(layout, {
-//       branch: sourceBranch,
-//       winId: payload.winId
-//     })
-//
-//     return insertWin(newLayout, {
-//       branch: payload.targetBranch,
-//       winId: payload.winId,
-//       direction: 'row',
-//       pos: 'stack',
-//       index: payload.index
-//     })
-//   }
-// }
-//
-// export function moveSplit(layout: JustNode | null, payload: JustPayloadMoveSplit): JustNode | null {
-//   const newLayout = insertWin(layout, {
-//     branch: payload.targetBranch,
-//     winId: payload.winId,
-//     direction: payload.direction,
-//     pos: payload.split,
-//     index: -1,
-//   });
-//   return removeWin(newLayout, {
-//     branch: payload.sourceBranch,
-//     winId: payload.winId
-//   })
-// }
 
 function getBranch(layout: JustNode | null, winId: string, branch: JustBranch): JustBranch | null {
   if( layout === null) return null
