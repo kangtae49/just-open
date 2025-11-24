@@ -82,8 +82,13 @@ function JustDraggableTitle(props: Prop) {
   console.log("JustDraggableTitle", winId, winInfo)
   return (
     <div
-      className={classnames("just-draggable-title", {"dragging": isDragging})}
-      // ref={drag as unknown as React.Ref<HTMLDivElement>}
+      className={classnames(
+        "just-draggable-title",
+        {
+          "dragging": isDragging,
+          "just-active": justStack.active === winId
+        }
+      )}
       ref={ref}
     >
       <div className="just-icon">{winInfo.icon}</div>

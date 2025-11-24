@@ -6,6 +6,7 @@ import * as url from "node:url";
 import * as fs from "node:fs";
 import path from "node:path";
 import mime from "mime-types";
+import svgr from 'vite-plugin-svgr'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -14,6 +15,9 @@ export default defineConfig({
       babel: {
         plugins: [['babel-plugin-react-compiler']],
       },
+    }),
+    svgr({
+      include: "**/*.svg?react",
     }),
     viteTsconfigPaths(),
     {

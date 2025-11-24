@@ -6,6 +6,7 @@ import type {JustNode, WinInfo} from "@/app/just-layout/justLayoutSlice.ts";
 
 import {FontAwesomeIcon as Icon} from "@fortawesome/react-fontawesome"
 import {faCircleQuestion} from "@fortawesome/free-solid-svg-icons"
+import TopMenuBar from "@/app/top-menu-bar/TopMenuBar.tsx";
 
 const viewMap: Record<string, WinInfo> = {
   "about": {
@@ -66,10 +67,11 @@ const initialValue: JustNode = {
 function App() {
 
   return (
-    <>
+    <div className="just-app">
+      <TopMenuBar />
       <JustLayoutView viewMap={viewMap} initialValue={initialValue} />
       {/*<VideoView />*/}
-    </>
+    </div>
   )
 }
 

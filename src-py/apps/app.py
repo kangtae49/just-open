@@ -56,6 +56,9 @@ def run():
         zoomable=False,
         confirm_close=False,
         width=840, height=600,
+        # frameless=True,
+        # easy_drag=False,
+        # resizable=True,
     )
 
     # events

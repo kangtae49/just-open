@@ -11,6 +11,7 @@ import {
 } from "../justLayoutSlice.ts";
 import useOnload from "@/hooks/useOnload.ts";
 import {JustNodeView} from "@/app/just-layout/ui/JustNodeView.tsx";
+import classNames from "classnames";
 
 interface Props {
   viewMap: Record<string, WinInfo>
@@ -39,7 +40,10 @@ export function JustLayoutView({viewMap, initialValue}: Props) {
   })
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="just-layout">
+      <div className={classNames(
+        "just-layout",
+        // "thema-dark"
+      )}>
         {justLayoutState && <JustNodeView node={justLayoutState.layout} justBranch={[]} viewMap={viewMap}/>}
       </div>
     </DndProvider>

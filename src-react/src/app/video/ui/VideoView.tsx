@@ -1,7 +1,7 @@
 import "./VideoView.css"
 import {useEffect, useRef} from "react";
 import {useAppDispatch, useDynamicSlice} from "@/store/hooks";
-import {createVideoSlice, type VideoState} from "../videoSlice";
+import {createVideoSlice, type VideoActions, type VideoState} from "../videoSlice";
 import { srcLocal } from "@/hooks/utils";
 import useOnload from "@/hooks/useOnload";
 
@@ -11,7 +11,7 @@ function VideoView() {
   const {
     state: videoState,
     actions: videoActions
-  } = useDynamicSlice<VideoState>(videoId, createVideoSlice)
+  } = useDynamicSlice<VideoState, VideoActions>(videoId, createVideoSlice)
   const dispatch = useAppDispatch();
   const {onLoad} = useOnload();
 
