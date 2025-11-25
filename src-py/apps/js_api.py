@@ -1,5 +1,8 @@
 import locale
 import os
+import threading
+import subprocess
+import time
 import glob
 import fnmatch
 import ctypes
@@ -14,7 +17,10 @@ from apps.models import DialogType, DialogOptions, Sub
 # MUSIC_PLAYER_SETTING = 'music-player.setting.json'
 # MOVIE_PLAYER_SETTING = 'movie-player.setting.json'
 # MOSAIC_LAYOUT_SETTING = 'mosaic-layout.setting.json'
-APP_NAME = "py-desk"
+APP_NAME = "just-open"
+
+processes = {}  # job_id -> Popen
+process_lock = threading.Lock()
 
 class ApiException(Exception):
     def __init__(self, message: str):
@@ -200,3 +206,49 @@ class JsApi:
             raise ApiException(f"not format: {p}")
         return subs.to_string(encoding='utf-8', format_="vtt")
 
+
+    def start_script(self, job_id: str, script_path: str):
+        def runner():
+            try:
+                p = subprocess.Popen(
+                    ['python.exe', script_path],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    bufsize=1,
+                )
+                with process_lock:
+                    processes[job_id] = p
+
+                for line in p.stdout:
+                    print(line, end='')
+
+                rc = p.wait()
+            finally:
+                with process_lock:
+                    processes.pop(job_id, None)
+
+        t = threading.Thread(target=runner, daemon=True)
+        t.start()
+
+
+    def stop_script(self, job_id: str):
+        with process_lock:
+            p = processes.get(job_id)
+
+        if not p:
+            return {"status": "error", "message": "process not found"}
+
+        try:
+            p.terminate()
+
+            def killer(proc):
+                time.sleep(1)
+                if proc.poll() is None:
+                    proc.kill()
+
+            threading.Thread(target=killer, args=(p,), daemon=True).start()
+
+            return {"status": "ok", "message": "terminating"}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}

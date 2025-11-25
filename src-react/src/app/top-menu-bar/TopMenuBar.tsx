@@ -6,7 +6,7 @@ import IconLogo from "../../assets/just-open.svg?react"
 
 function TopMenuBar() {
   return (
-    <div className="just-top-menu-bar pywebview-drag-region">
+    <div className="just-top-menu-bar">
       <div className="just-app-icon">
         <IconLogo />
       </div>
